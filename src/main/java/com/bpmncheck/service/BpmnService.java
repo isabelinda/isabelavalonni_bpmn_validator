@@ -29,8 +29,11 @@ public class BpmnService {
 
 	public List<Log> checkAllBpmnLogs(BpmnModelInstance modelBpmn, List<Log> logs) {
 		for (Log log : logs) {
-			System.out.println("*********************" + log.getId());
+			System.out.println("");
+			System.out.println("** Log Id: " + log.getId());
+			System.out.println("");
 			log.setResult(checkBpmnLog(modelBpmn, log));
+			System.out.println("** Result: " + log.getResult());
 		}
 		return logs;
 	}
@@ -78,9 +81,9 @@ public class BpmnService {
 		if (currentNodes.size() == 0) return false;
 
 		// Verifica se todos os nós são finais
-		if(checkAlwaysEndEvent(currentNodes) && (logEvents.size() == 0)) {
+		if((logEvents.size() == 0) && (isAlwaysEndEvent(currentNodes))) {
 			return true;
-		} else if (checkAlwaysEndEvent(currentNodes) && (logEvents.size() != 0)) {
+		} else if ((logEvents.size() != 0) && isAlwaysEndEvent(currentNodes)) {
 			return false;
 		}
 		
@@ -92,34 +95,60 @@ public class BpmnService {
 		 * nós para a proxima chamada recursiva. Se não for uma lista de tarefas, é lido
 		 * cada nó e aplicado a lógica conforme o caso especifico de cada.
 		 */
-		if (checkAlwaysTaskAndEndEvent(currentNodes)) {
+		if (isAlwaysTaskAndEndEvent(currentNodes)) {
+
+			System.out.println("Current LOG -------");
+			for(String s : logEvents) {
+				System.out.print(s + ",");
+			}
+			System.out.println("");
 			
-			for (Iterator<FlowNode> node = currentNodes.iterator(); node.hasNext();) {
-				FlowNode currentNode = node.next();
-				for (int i = 0; i < countTasks(currentNodes); i++) {
-					if(i < logEvents.size()) {
-						System.out.println("** " + currentNode.getName());
-						if (currentNode.getName().equals(logEvents.get(i))) {
-							System.out.println(currentNode.getName());
-							logEvents.remove(i);
-							
-							Collection<SequenceFlow> outgoing = currentNode.getOutgoing();
-							Iterator<SequenceFlow> iterator = outgoing.iterator();
-							while (iterator.hasNext()) {
-								SequenceFlow sequence = iterator.next();
-								FlowNode newCurrentNode = sequence.getTarget();
-								if (!newCurrentNodes.contains(newCurrentNode)) {
-									newCurrentNodes.add(newCurrentNode);
-								}
+			System.out.println("Current Nodes -----");
+			for(FlowNode node : currentNodes) {
+				System.out.print(node.getName() + ",");
+			}
+			System.out.println("");
+			System.out.println("-------------------");
+			
+			int countRemoveLog  = 0;
+			int countRemoveNode = 0;
+			
+			for(Iterator<String> log = logEvents.iterator(); log.hasNext();) {
+				String currentLog = log.next();
+				countRemoveLog++;
+				
+				for(Iterator<FlowNode> node = currentNodes.iterator(); node.hasNext();) {
+					FlowNode currentNode = node.next();
+					
+					if(currentNode.getName().equals(currentLog)) {
+						System.out.println("> " + currentNode.getName());
+						countRemoveNode++;
+						
+						Collection<SequenceFlow> outgoing = currentNode.getOutgoing();
+						Iterator<SequenceFlow> iterator = outgoing.iterator();
+						while (iterator.hasNext()) {
+							SequenceFlow sequence = iterator.next();
+							FlowNode newCurrentNode = sequence.getTarget();
+							if ((!currentNodes.contains(newCurrentNode)) && (!newCurrentNodes.contains(newCurrentNode))) {
+								newCurrentNodes.add(newCurrentNode);
 							}
-							
-							node.remove();
-						} 
+						}
+						
+						node.remove();
+						log.remove();
+						break;
 					}
+				}
+				
+				if(countRemoveLog != countRemoveNode) {
+					break;
 				}
 			}
 			
-			if((currentNodes.size() > 0) && (!checkAlwaysEndEvent(currentNodes))) {
+			
+			System.out.println("");
+			//Se não removeu nenhum evento do Log, retorna false
+			if(logEvents.equals(logEventsCopy)) {
 				return false;
 			} else {
 				newCurrentNodes.addAll(currentNodes);
@@ -134,16 +163,18 @@ public class BpmnService {
 				 * Simplesmente adiciona novamente na lista de novos nós
 				 */
 				if (currentNode.getClass() == TaskImpl.class) {
-					newCurrentNodes.add(currentNode);
+					if (!newCurrentNodes.contains(currentNode)) {
+						newCurrentNodes.add(currentNode);
+					}
 				} else {
 					Collection<SequenceFlow> outgoing = currentNode.getOutgoing();
 					Iterator<SequenceFlow> iterator = outgoing.iterator();
 					
 					/*
-					 * PARALLEL OR START
+					 * START
 					 * Adiciona todas as saídas na lista de novos nós
 					 */
-					if(currentNode.getClass() == ParallelGatewayImpl.class || currentNode.getClass() == StartEventImpl.class) {
+					if(currentNode.getClass() == StartEventImpl.class) {
 						while (iterator.hasNext()) {
 							SequenceFlow sequence = iterator.next();
 							FlowNode newCurrentNode = sequence.getTarget();
@@ -151,6 +182,22 @@ public class BpmnService {
 								newCurrentNodes.add(newCurrentNode);
 							}
 						}
+					}
+					
+					/*
+					 * PARALLEL
+					 * Adiciona todas as saídas na lista de novos nós
+					 */
+					if(currentNode.getClass() == ParallelGatewayImpl.class) {
+						if(isActiveNode(currentNode, currentNodes)) {
+							while (iterator.hasNext()) {
+								SequenceFlow sequence = iterator.next();
+								FlowNode newCurrentNode = sequence.getTarget();
+								if (!newCurrentNodes.contains(newCurrentNode)) {
+									newCurrentNodes.add(newCurrentNode);
+								}
+							}
+						} 
 					}
 					
 					/*
@@ -172,7 +219,9 @@ public class BpmnService {
 							}
 							
 							for(int i = (currentNodes.indexOf(currentNode) + 1); i < currentNodes.size(); i++) {
-								newCurrentNodes.add(currentNodes.get(i));
+								if(!newCurrentNodes.contains(currentNodes.get(i))) {
+									newCurrentNodes.add(currentNodes.get(i));
+								}
 							}
 							
 							if (checkBpmnLogRecursive(modelBpmn, logEvents, newCurrentNodes)) {
@@ -190,41 +239,45 @@ public class BpmnService {
 					 * Testa as combinações possíveis de saídas, usando a recursão
 					 */
 					if(currentNode.getClass() == InclusiveGatewayImpl.class) {
-						List<FlowNode> newInclusiveNodes = new ArrayList<>();
-						
-						Collection<SequenceFlow> outgoingInclusive = currentNode.getOutgoing();
-						Iterator<SequenceFlow> iteratorInclusive = outgoingInclusive.iterator();
-						while (iteratorInclusive.hasNext()) {
-							SequenceFlow sequence = iteratorInclusive.next();
-							FlowNode newInclusiveNode = sequence.getTarget();
-							if (!newInclusiveNodes.contains(newInclusiveNode)) {
-								newInclusiveNodes.add(newInclusiveNode);
+						if(isActiveNode(currentNode, currentNodes)) {
+							List<FlowNode> newInclusiveNodes = new ArrayList<>();
+							
+							Collection<SequenceFlow> outgoingInclusive = currentNode.getOutgoing();
+							Iterator<SequenceFlow> iteratorInclusive = outgoingInclusive.iterator();
+							while (iteratorInclusive.hasNext()) {
+								SequenceFlow sequence = iteratorInclusive.next();
+								FlowNode newInclusiveNode = sequence.getTarget();
+								if (!newInclusiveNodes.contains(newInclusiveNode)) {
+									newInclusiveNodes.add(newInclusiveNode);
+								}
 							}
+							
+					        InclusiveComb comb = new InclusiveComb(newInclusiveNodes, 0);
+					        while ( comb.hasNext() ) {
+					        		List<FlowNode> listCombInclusiveNodes = new ArrayList<>();
+					        		listCombInclusiveNodes = comb.next() ;
+					        		
+					        		List<FlowNode> newCurrentNodesCopy = new ArrayList<>(newCurrentNodes);
+					        		
+					            for ( FlowNode e : listCombInclusiveNodes ) {
+									newCurrentNodes.add(e);
+					            }
+					            
+					            for(int i = (currentNodes.indexOf(currentNode) + 1); i < currentNodes.size(); i++) {
+					            		if(!newCurrentNodes.contains(currentNodes.get(i))) {
+										newCurrentNodes.add(currentNodes.get(i));
+									}
+								}
+					            
+					            if (checkBpmnLogRecursive(modelBpmn, logEvents, newCurrentNodes)) {
+									return true;
+								} else {
+									newCurrentNodes = new ArrayList<>(newCurrentNodesCopy);
+									logEvents = new ArrayList<>(logEventsCopy);
+								}
+					        }
+					        return false;
 						}
-						
-				        InclusiveComb comb = new InclusiveComb(newInclusiveNodes, 0);
-				        while ( comb.hasNext() ) {
-				        		List<FlowNode> listCombInclusiveNodes = new ArrayList<>();
-				        		listCombInclusiveNodes = comb.next() ;
-				        		
-				        		List<FlowNode> newCurrentNodesCopy = new ArrayList<>(newCurrentNodes);
-				        		
-				            for ( FlowNode e : listCombInclusiveNodes ) {
-								newCurrentNodes.add(e);
-				            }
-				            
-				            for(int i = (currentNodes.indexOf(currentNode) + 1); i < currentNodes.size(); i++) {
-								newCurrentNodes.add(currentNodes.get(i));
-							}
-				            
-				            if (checkBpmnLogRecursive(modelBpmn, logEvents, newCurrentNodes)) {
-								return true;
-							} else {
-								newCurrentNodes = new ArrayList<>(newCurrentNodesCopy);
-								logEvents = new ArrayList<>(logEventsCopy);
-							}
-				        }
-				        return false;
 					}
 					
 					/*
@@ -239,26 +292,18 @@ public class BpmnService {
 				}
 			}
 		}
-		return checkBpmnLogRecursive(modelBpmn, logEvents, newCurrentNodes);
-	}
-	
-	/*
-	 * Conta quantas são as tarefas na lista (pode ter END Event no meio, por isso foi necessário esse método)
-	 */
-	private Integer countTasks(List<FlowNode> nodes) {
-		Integer count = 0;
-		for (FlowNode node : nodes) {
-			if (node.getClass() == TaskImpl.class) {
-				count++;
-			}
+		
+		if(currentNodes.equals(newCurrentNodes)) {
+			return false;
+		} else {
+			return checkBpmnLogRecursive(modelBpmn, logEvents, newCurrentNodes);
 		}
-		return count;
 	}
 	
 	/*
 	 * Verifica se todos os nós da lista são tarefas, com a resalva de ter um END no meio da lista
 	 */
-	private Boolean checkAlwaysTaskAndEndEvent(List<FlowNode> nodes) {
+	private Boolean isAlwaysTaskAndEndEvent(List<FlowNode> nodes) {
 		for (FlowNode node : nodes) {
 			if ((node.getClass() != TaskImpl.class) && (node.getClass() != EndEventImpl.class)) {
 				return false;
@@ -270,7 +315,7 @@ public class BpmnService {
 	/*
 	 * Verifica se todos os nós da lista são somente de END Event
 	 */
-	private Boolean checkAlwaysEndEvent(List<FlowNode> nodes) {
+	private Boolean isAlwaysEndEvent(List<FlowNode> nodes) {
 		for (FlowNode node : nodes) {
 			if (node.getClass() != EndEventImpl.class) {
 				return false;
@@ -278,5 +323,23 @@ public class BpmnService {
 		}
 		return true;
 	}
-
+	
+	/*
+	 * Verifica se o nó pode ser ativado
+	 * Para ser ativado nenhum dos seus previous nodes podem estar na lista de nodes
+	 */
+	private Boolean isActiveNode(FlowNode activeNode, List<FlowNode> nodes) {
+		for(FlowNode node : activeNode.getPreviousNodes().list()) {
+			if(nodes.contains(node)) {
+				return false;
+			} else {
+				for(FlowNode subNode : node.getPreviousNodes().list()) {
+					if(nodes.contains(subNode)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
 }
