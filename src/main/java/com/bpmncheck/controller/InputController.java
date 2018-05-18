@@ -3,6 +3,8 @@ package com.bpmncheck.controller;
 import java.io.File;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import com.bpmncheck.model.Log;
 import com.bpmncheck.service.BpmnService;
 import com.bpmncheck.service.CsvService;
@@ -22,6 +24,7 @@ public class InputController {
 	}
 
 	public void checkBpmn(String pathBpmn, String pathCsv) {
+		try {
 		List<Log> logs = bpmnService.checkAllBpmnLogs(this.bpmnService.readFile(pathBpmn), this.csvService.readLogCsvFile(pathCsv));
 		//Salvar arquivos de resultado
 		File file = new File(pathCsv);
@@ -32,6 +35,9 @@ public class InputController {
 		//Abre a tela output
 		OutputFrame outputFrame = new OutputFrame(logs, pathBpmn, pathCsv, pathSaveTrues, pathSaveFalses);
 		outputFrame.setVisible(true);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(view, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	public Boolean fileExist(String path) {
