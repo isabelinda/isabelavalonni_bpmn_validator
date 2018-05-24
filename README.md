@@ -1,4 +1,4 @@
-BPMN Check
+﻿BPMN Check Validator - BPMN Analysis from Process Discovery Contest @ BPM 2017
 ====
 Este módulo tem por finalidade validar uma modelagem BPMN 2.0 a partir de um fluxo de execução pré-determinado.
 
@@ -212,7 +212,7 @@ Limitações
 No decorrer da implementação foi apresentado um problema nos nós Parallel, bem como para os casos em que a combinação de nós posteriores ao Inclusive Gateway é maior que um. Nesses casos, onde existem saídas paralelas para um nó, é esperado que o fluxo dessas duas ou mais saídas em algum momento se encontrem novamente (em último caso essa união irá ocorrer para o evento final). Porém, até esse reencontro, os fluxos podem ter tamanhos diferentes, onde um dos fluxos pode chegar ao ponto de encontro primeiro, ao chegar ao ponto de encontro primeiro é preciso esperar até que o outro fluxo (podendo ser mais de um) chegue a esse mesmo ponto para se dar continuidade na execução do processo. 
 Para tentar solucionar esse problemas, foi criado um conceito de nó ativo e implementado a seguinte a solução: quando um nó tem mais de um nó antecessor a ele, ou seja é um ponto de encontro de fluxos, é verificado se seus antecessores e consequentemente os precedentes aos antecessores (verificação em 2 níveis apenas) são nós ativos. Para ser um nó ativo, essa verificação não pode retornar nenhum nó que ainda esteja na lista de eventos do caso em análise, ou seja se algum nó antecessor ao encontro de fluxos ainda está na lista de eventos a serem verificados, é porque os fluxos têm tamanhos diferentes e é preciso aguardar. Contudo a limitação fica em ser verificado em apenas dois níveis antecessores, isso porque, existem casos com mais de dois níveis, onde é gerado um loop infinito. 
 
-Caso de Estudo Aplicado
+Caso de Estudo Aplicado - Modelos e Logs do "Process Discovery Contest @ BPM 2017"
 =============
 
 Foram disponibilizados 10 modelos BPMN (numerados de 1 a 10) e 10 arquivos Log  (numerados de 1 a 10), um modelo para seu respectivo arquivo Log. Onde cada Log contém 20 casos a serem analisados. Entre esses 10 Logs, 4 deles foram analisados manualmente, sendo eles o 2, 3, 6 e 7, a fim de confrontar os resultados e comprovar a eficiência da ferramenta. Para esses casos analisados manualmente a ferramenta apresentou 100% de corretude. Segue resultados dos 10 modelos.   
