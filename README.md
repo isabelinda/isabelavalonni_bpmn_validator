@@ -235,43 +235,43 @@ Foram disponibilizados 10 modelos BPMN (numerados de 1 a 10) e 10 arquivos Log  
 
 Model 1) 10 válidos e 10 inválidos 
 
-![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/1.PNG "Model 1")
+![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/1.PNG)
 
 Model 2) 10 válidos e 10 inválidos
 
-![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/2.PNG "Model 2")
+![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/2.PNG)
 
 Model 3) 10 válidos e 10 inválidos
 
-![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/3.PNG "Model 3")
+![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/3.PNG)
 
 Model 4) 10 válidos e 10 inválidos
 
-![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/4.PNG "Model 4")
+![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/4.PNG)
 
 Model 5) 7 válidos e 13 inválidos
 
-![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/5.PNG "Model 5")
+![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/5.PNG)
 
 Model 6) 10 válidos e 10 inválidos
 
-![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/6.PNG "Model 6")
+![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/6.PNG)
 
 Model 7) 10 válidos e 10 inválidos
 
-![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/7.PNG "Model 7")
+![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/7.PNG)
 
 Model 8) 10 válidos e 10 inválidos
 
-![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/8.PNG "Model 8")
+![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/8.PNG)
 
 Model 9) 6 válidos e 14 inválidos
 
-![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/9.PNG "Model 9")
+![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/9.PNG)
 
 Model 10) 6 válidos e 14 inválidos
 
-![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/10.PNG "Model 10")
+![alt text](https://github.com/isabelinda/isabelavalonni_bpmn_validator/tree/master/Executavel%20e%20documentacao/Resultados/10.PNG)
 
 Contudo, por se tratar de um estudo controlado, mesmo sem saber quais casos, já era conhecido que cada arquivo Log deveria apresentar 10 casos válidos e 10 inválidos, o que não aconteceu com os modelos 5, 9 e 10, devido às limitações mencionadas.
 
