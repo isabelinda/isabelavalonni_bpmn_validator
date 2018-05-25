@@ -27,8 +27,8 @@ public class InputFrame extends JFrame {
 
 	private InputController controller;
 
-	private Icon iconSearch = new ImageIcon("src/main/resources/search.png");
-	private Icon iconCheck = new ImageIcon("src/main/resources/check.png");
+	private Icon iconSearch = new ImageIcon(getClass().getClassLoader().getResource("search.png"));
+	private Icon iconCheck = new ImageIcon(getClass().getClassLoader().getResource("check.png"));
 
 	private JLabel lblFileBpmn = new JLabel("Caminho do arquivo BPMN (.bpmn):");
 	private JTextField tfFileBpmn = new JTextField("");
@@ -39,7 +39,7 @@ public class InputFrame extends JFrame {
 	private JButton btnCheck = new JButton("Check", iconCheck);
 
 	public InputFrame() {
-		this.setIconImage(Toolkit.getDefaultToolkit().getImage("src/main/resources/bpmn.png"));
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("bpmn.png")));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
 		setTitle("BPMN Check");

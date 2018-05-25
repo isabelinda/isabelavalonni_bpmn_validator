@@ -30,7 +30,7 @@ public class OutputFrame extends JDialog {
 	private JTable tableResults = new JTable();
 	private ResultsTableModel resultsTableModel = new ResultsTableModel();
 	
-	private Icon iconCheck = new ImageIcon("src/main/resources/check.png");
+	private Icon iconCheck = new ImageIcon(getClass().getClassLoader().getResource("check.png"));
 	
 	private JLabel lblBpmn = new JLabel("Arquivo BPMN: ");
 	private JLabel lblFileBpmn = new JLabel("");
@@ -44,7 +44,7 @@ public class OutputFrame extends JDialog {
 	
 	
 	public OutputFrame(List<Log> logs, String pathBpmn, String pathCsv, String pathSaveTrues, String pathSaveFalses) {
-		this.setIconImage(Toolkit.getDefaultToolkit().getImage("src/main/resources/bpmn.png"));
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("bpmn.png")));
 		setTitle("BPMN Check Results");
 		setSize(320, 320);
 		setLocationRelativeTo(null);

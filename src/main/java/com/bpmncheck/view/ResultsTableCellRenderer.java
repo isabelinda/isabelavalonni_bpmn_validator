@@ -25,9 +25,9 @@ public class ResultsTableCellRenderer extends DefaultTableCellRenderer {
 			JLabel lblIcon = new JLabel();
 		    ImageIcon icon = null;
 		    if (trueOrFalse) {
-		      icon = new ImageIcon("src/main/resources/true.png");
+		      icon = new ImageIcon(getClass().getClassLoader().getResource("true.png"));
 		    } else {
-		       icon = new ImageIcon("src/main/resources/false.png");
+		       icon = new ImageIcon(getClass().getClassLoader().getResource("false.png"));
 		    }
 		    lblIcon.setHorizontalAlignment(JLabel.CENTER);
 		    lblIcon.setVerticalAlignment(JLabel.CENTER);
